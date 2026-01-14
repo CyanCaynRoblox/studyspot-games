@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Unblocked games, 100+ games free for school, unblocked, i hate system admins kill them i want them dead">
+  
+  <title>Studyspot Focus (beta)</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* --- THEME VARIABLES --- */
+    :root {
+        /* Default Crimson Theme */
+        --bg-core: #400909;
+        --bg-grad-1: #690000;
+        --bg-grad-2: #450000;
+        --btn-bg: #590000;
+        --border-color: #AF0000;
+        --accent-color: #fc0384;
+        --text-grad-1: #ff0000;
+        --text-grad-2: #fc0384;
+        --border-grad-1: #d94848;
+        --border-grad-2: #a03232;
+        --glass-bg: rgba(40, 0, 0, 0.95);
+        --modal-overlay: rgba(0,0,0,0.2);
+    }
+
+    /* --- Hub Core Styles --- */
+    body { 
+        background-color: var(--bg-core); 
+        font-family: 'Inter', sans-serif; 
+        overflow: hidden; 
+        margin: 0; 
+        user-select: none; 
+        transition: background-color 0.5s ease;
+    }
+   
+    /* Selection colors adapted to use accent */
+    h1::selection, h2::selection, p::selection {
+        background-color: var(--accent-color);
+        color: #000000;
+    }
+
+    h1 {
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        font-size: 8.5vw;
+        text-align: center;
+        margin: 0;
+    }
+
+    h2::selection {
+        background-color: var(--accent-color);
+        color: #000000;
+    }
+
+    h2 {
+        font-family: 'Inter', sans-serif;
+        font-weight: 550;
+        font-size: 6.5vw;
+        text-align: center;
+        margin: 0;
+    }
+
+    p { color: white; }
+   
+    .page-container {
+        border: 5px solid transparent; 
+        border-radius: 30px; 
+        margin: 20px;
+        width: calc(100vw - 40px);
+        height: calc(100vh - 40px); 
+        box-sizing: border-box;
+        overflow: hidden; 
+        position: relative; 
+        z-index: 1;
+        /* Updated to use variables */
+        background: linear-gradient(var(--bg-grad-1), var(--bg-grad-2)) padding-box, 
+                    linear-gradient(to bottom, var(--border-grad-1), var(--border-grad-2)) border-box;
+        background-clip: padding-box, border-box;
+        box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
+        transition: background 0.5s ease;
+    }
+
+    .main-content { 
+        padding: 40px; 
+        color: #FFFFFF; 
+        text-align: center; 
+        height: 100%; 
+        overflow-y: auto; 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .gradient-text {
+        /* Updated to use variables */
+        background: linear-gradient(90deg, var(--text-grad-1), var(--text-grad-2), var(--text-grad-1));
+        background-size: 200% auto; 
+        -webkit-background-clip: text; 
+        background-clip: text;
+        color: transparent; 
+        animation: gradient-move 5s linear infinite; 
+        font-weight: 700;
+    }
+
+    @keyframes gradient-move { 
+        0% { background-position: 0% 50%; } 
+        100% { background-position: 200% 50%; }
+    }
+    
+    .openbtn { 
+        font-size: 20px; 
+        cursor: pointer; 
+        /* Updated to use variables */
+        background-color: var(--btn-bg); 
+        color: white; 
+        padding: 10px 20px; 
+        border: 2px solid var(--border-color); 
+        border-radius: 15px; 
+        margin-bottom: 20px; 
+        transition: 0.2s;
+        align-self: flex-start;
+    }
+
+    .openbtn:hover {
+        filter: brightness(1.2);
+        box-shadow: 0 0 15px var(--accent-color);
+    }
+
+    /* --- Sidebar & Overlay --- */
+    .sidebar {
+        width: 300px; 
+        /* Updated to use variables */
+        background: var(--glass-bg); 
+        border-right: 2px solid var(--border-color);
+        position: fixed; 
+        left: 0; 
+        top: 0; 
+        height: 100vh; 
+        transform: translateX(-100%); 
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+        z-index: 10001; 
+        padding-top: 60px; 
+        box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+    }
+    
+    .sidebar.open { transform: translateX(0); }
+
+    .sidebar a { 
+        padding: 15px 25px; 
+        text-decoration: none; 
+        font-size: 18px; 
+        color: white; 
+        display: block; 
+        transition: 0.2s;
+        border-left: 3px solid transparent;
+    }
+
+    .sidebar a:hover {
+        background: rgba(255,255,255,0.1);
+        border-left: 3px solid var(--accent-color);
+    }
+    
+    .sidebar .closebtn {
+        position: absolute;
+        top: 0;
+        right: 25px;
+        font-size: 36px;
+        margin-left: 50px;
+    }
+    
+    .overlay-blur { 
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+        background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); 
+        z-index: 10000; display: none; opacity: 0; transition: opacity 0.5s; 
+    }
+    .overlay-blur.visible { display: block; opacity: 1; }
+
+    /* --- Modal System --- */
+    .smart-modal { 
+        padding: 0; 
+        border: 5px solid transparent; 
+        border-radius: 15px; 
+        width: 450px; 
+        height: 350px; 
+        position: fixed; 
+        display: none; 
+        flex-direction: column; 
+        overflow: hidden; 
+        resize: both; 
+        /* Updated to use variables */
+        background: linear-gradient(var(--bg-grad-1), var(--bg-grad-2)) padding-box, 
+                    linear-gradient(to bottom, var(--border-grad-1), var(--border-grad-2)) border-box; 
+        background-clip: padding-box, border-box; 
+        z-index: 5000;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        min-width: 200px;
+        min-height: 150px;
+        transition: background 0.5s ease;
+    }
+    
+    .smart-modal[open] { display: flex; }
+    
+    .tab-bar { 
+        display: flex; 
+        background: rgba(0,0,0,0.3); 
+        padding: 5px 15px 0 15px; 
+        gap: 5px; 
+        border-bottom: 1px solid rgba(0,0,0,0.1); 
+        overflow-x: auto; 
+        scrollbar-width: none; 
+        height: 35px;
+        flex-shrink: 0;
+    }
+    
+    .tab-item { 
+        padding: 5px 12px; 
+        /* Updated to use variables */
+        background: rgba(0,0,0,0.2); 
+        color: #aaa; 
+        border-radius: 8px 8px 0 0; 
+        font-size: 12px; 
+        cursor: pointer; 
+        border: 1px solid var(--border-color); 
+        border-bottom: none; 
+        display: flex; 
+        align-items: center; 
+        gap: 8px; 
+        white-space: nowrap; 
+        transition: 0.2s;
+    }
+    
+    .tab-item:hover { background: var(--btn-bg); color: white; }
+    .tab-item.active { background: var(--btn-bg); color: white; font-weight: bold; border-top: 2px solid var(--accent-color); }
+    
+    .modal-header { 
+        padding: 8px 15px; 
+        background: var(--modal-overlay); 
+        cursor: move; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        user-select: none;
+        height: 30px;
+        flex-shrink: 0;
+    }
+    
+    .modal-body { 
+        padding: 20px; 
+        color: white; 
+        flex-grow: 1; 
+        overflow: auto; 
+        text-align: left; 
+        background: rgba(0,0,0,0.1);
+        position: relative;
+    }
+    
+    /* Menu Bar Styles */
+    .app-menubar {
+        display: flex;
+        background: rgba(0,0,0,0.2);
+        padding: 2px 10px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        font-size: 11px;
+        color: #ddd;
+        user-select: none;
+        flex-shrink: 0;
+    }
+    
+    .app-menu-item {
+        padding: 4px 10px;
+        cursor: pointer;
+        border-radius: 4px;
+        position: relative;
+    }
+    
+    .app-menu-item:hover {
+        background: rgba(255,255,255,0.1);
+        color: white;
+    }
+
+    .app-menu-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: var(--glass-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        min-width: 150px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        z-index: 100;
+        display: none;
+        flex-direction: column;
+        padding: 5px 0;
+        backdrop-filter: blur(10px);
+    }
+    
+    .app-menu-dropdown.visible {
+        display: flex;
+    }
+
+    .app-menu-option {
+        padding: 8px 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .app-menu-option:hover {
+        background: var(--accent-color);
+        color: white;
+    }
+    
+    .modal-ctrl-btn { 
+        /* Updated to use variables */
+        background: var(--btn-bg); 
+        color: white; 
+        border: 1px solid var(--border-color); 
+        border-radius: 4px; 
+        cursor: pointer; 
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 5px; 
+        font-weight: bold; 
+        font-size: 12px;
+    }
+    
+    .modal-ctrl-btn:hover { background: var(--accent-color); }
+
+    .fab-add { 
+        position: fixed; 
+        bottom: 30px; 
+        right: 30px; 
+        width: 60px; 
+        height: 60px; 
+        /* Updated to use variables */
+        background: var(--btn-bg); 
+        color: white; 
+        border: 3px solid var(--border-color); 
+        border-radius: 50%; 
+        font-size: 35px; 
+        cursor: pointer; 
+        z-index: 4999; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+    }
+
+    .fab-add:hover { transform: scale(1.1) rotate(90deg); background: var(--accent-color); border-color: white; }
+
+    /* --- LIQUID GLASS FAB --- */
+    .fab-glass {
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        width: 50px;
+        height: 50px;
+        background: var(--glass-bg);
+        color: white;
+        border: 2px solid var(--border-color);
+        border-radius: 50%;
+        font-size: 24px;
+        cursor: pointer;
+        z-index: 4999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.3s;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+        backdrop-filter: blur(5px);
+    }
+    .fab-glass:hover {
+        background: var(--accent-color);
+        transform: scale(1.1);
+    }
+    
+    #loading-screen { 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        width: 100%; 
+        height: 100%; 
+        background: var(--bg-core); 
+        display: flex; 
+        flex-direction: column; 
+        justify-content: center; 
+        align-items: center; 
+        z-index: 20000; 
+        color: white; 
+    }
+    
+    .loader { 
+        border: 8px solid #f3f3f3; 
+        border-top: 8px solid var(--accent-color); 
+        border-radius: 50%; 
+        width: 60px; 
+        height: 60px; 
+        animation: spin 2s linear infinite; 
+        margin-bottom: 20px; 
+    }
+    
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* --- UPDATED APPLE-STYLE APP ICONS --- */
+    .app-icon {
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: flex-start;
+        cursor: pointer; 
+        transition: 0.2s;
+        /* Removed background/border from wrapper */
+        background: transparent;
+        border: none;
+        padding: 0;
+        width: 90px;
+    }
+    
+    .app-icon:hover {
+        transform: scale(1.05); 
+        /* Box shadow moved to inner icon */
+        background: transparent;
+        box-shadow: none;
+        border-color: transparent;
+    }
+
+    /* The square part of the app icon */
+    .app-icon-visual {
+        width: 70px;
+        height: 70px;
+        border-radius: 18px; /* Squircle */
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 35px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        margin-bottom: 8px;
+    }
+
+    .app-icon:hover .app-icon-visual {
+        background: rgba(255,255,255,0.2);
+        border-color: var(--accent-color);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+    
+    .app-icon p { 
+        margin-top: 0; 
+        font-weight: 500; 
+        color: white; 
+        font-size: 13px; 
+        text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+        text-align: center;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-color); }
+
+    .smart-context-menu {
+        position: fixed; 
+        background: var(--glass-bg); 
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--border-color); 
+        border-radius: 12px; 
+        width: 180px; 
+        z-index: 30000;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.7); 
+        padding: 5px 0;
+        display: none;
+    }
+    
+    .menu-item {
+        padding: 10px 15px; 
+        color: white; 
+        cursor: pointer; 
+        font-size: 13px; 
+        transition: 0.2s;
+    }
+    
+    .menu-item:hover { background: rgba(255, 255, 255, 0.1); }
+    
+    .file-grid-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        width: 80px;
+        text-align: center;
+    }
+    .file-grid-item:hover {
+        background: rgba(255,255,255,0.1);
+    }
+
+    /* --- NOTIFICATION SYSTEM --- */
+    #notification-area {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 300px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 21000; /* Above everything */
+        pointer-events: none; /* Let clicks pass through gaps */
+    }
+
+    .notification-toast {
+        background: var(--glass-bg);
+        border: 1px solid var(--border-color);
+        border-left: 4px solid var(--accent-color);
+        border-radius: 8px;
+        padding: 15px;
+        color: white;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        backdrop-filter: blur(12px);
+        pointer-events: auto;
+        animation: slideInRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        cursor: pointer;
+        transition: transform 0.2s, opacity 0.3s;
+    }
+
+    .notification-toast:hover {
+        transform: translateX(-5px);
+    }
+
+    .notification-toast.hiding {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+
+    .notif-title {
+        font-weight: bold;
+        font-size: 14px;
+        margin-bottom: 5px;
+        color: var(--accent-color);
+    }
+
+    .notif-msg {
+        font-size: 12px;
+        color: #ddd;
+        line-height: 1.4;
+    }
+
+    @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(100%); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Toggle Switch Styles for Settings */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-color: #333;
+        transition: .4s;
+        border-radius: 20px;
+        border: 1px solid #555;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        bottom: 2px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    input:checked + .slider {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
+    input:checked + .slider:before {
+        transform: translateX(18px);
+    }
+
+    /* --- ANIMATION KEYFRAMES FOR SETTINGS PREVIEWS --- */
+    @keyframes rgb-pulse {
+        0% { background-color: #ff0000; }
+        33% { background-color: #00ff00; }
+        66% { background-color: #0000ff; }
+        100% { background-color: #ff0000; }
+    }
+
+    @keyframes rainbow-pulse {
+        0% { background-color: #ff0000; }
+        17% { background-color: #ff7f00; }
+        33% { background-color: #ffff00; }
+        50% { background-color: #00ff00; }
+        67% { background-color: #0000ff; }
+        83% { background-color: #4b0082; }
+        100% { background-color: #9400d3; }
+    }
+
+    /* --- TOP BAR (Global Menu) --- */
+    .top-nav-trigger {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 15px;
+        z-index: 20000;
+        background: transparent;
+    }
+
+    .top-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 40px;
+        background: var(--glass-bg);
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        padding: 0 15px;
+        box-sizing: border-box;
+        z-index: 10001;
+        transform: translateY(-100%);
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        backdrop-filter: blur(10px);
+        justify-content: space-between;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    }
+
+    /* Hover logic - STAYS OPEN IF MENU-OPEN CLASS IS PRESENT */
+    .top-nav-trigger:hover ~ .top-nav,
+    .top-nav:hover,
+    .top-nav.pinned,
+    .top-nav.menu-open {
+        transform: translateY(0);
+    }
+
+    .top-nav-left {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .top-nav-app-name {
+        font-weight: bold;
+        font-size: 14px;
+        color: white;
+    }
+
+    .top-nav-menu-container {
+        display: flex;
+        gap: 5px;
+    }
+
+    /* Top Bar Menu Items */
+    .top-menu-item {
+        font-size: 13px;
+        color: #ddd;
+        padding: 4px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .top-menu-item:hover {
+        background: rgba(255,255,255,0.15);
+        color: white;
+    }
+
+    /* Dropdown for Top Bar */
+    .top-menu-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: var(--glass-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 0 0 6px 6px;
+        min-width: 160px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        display: none;
+        flex-direction: column;
+        padding: 5px 0;
+        backdrop-filter: blur(10px);
+        margin-top: 5px;
+    }
+
+    .top-menu-dropdown.visible {
+        display: flex;
+    }
+
+    .top-menu-option {
+        padding: 8px 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        font-size: 13px;
+        color: #eee;
+    }
+
+    .top-menu-option:hover {
+        background: var(--accent-color);
+        color: white;
+    }
+
+    .pin-btn {
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 4px;
+        color: #aaa;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .pin-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+    .pin-btn.active { color: var(--accent-color); transform: rotate(45deg); }
+
+  </style>
+</head>
+<body>
+
+<div id="loading-screen"><div class="loader"></div><p class="gradient-text">LOADING HUB...</p></div>
+<div id="globalBlurOverlay" class="overlay-blur"></div>
+<div id="notification-area"></div>
+
+<!-- TOP NAV SYSTEM -->
+<div class="top-nav-trigger"></div>
+<div id="myTopBar" class="top-nav">
+    <div class="top-nav-left">
+        <!-- REPLACED APPLE LOGO WITH GENERIC ICON -->
+        <span class="gradient-text" style="font-weight:900; font-size:16px;">❖</span>
+        <span id="topBarAppName" class="top-nav-app-name">Crimson OS</span>
+        <div id="topBarMenuContainer" class="top-nav-menu-container">
+            <!-- Dynamic Menu Items Go Here -->
+        </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:15px;">
+        <span id="pinBtn" class="pin-btn" onclick="togglePin()">📌</span>
+        <span id="clockDisplay" style="font-size:12px; color:#aaa; font-family:monospace;"></span>
+    </div>
+</div>
+
+<!-- Sidebar Menu (Restored) -->
+<div id="mySidebar" class="sidebar">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+  <div style="padding: 0 25px; margin-bottom: 20px;">
+      <h3 style="color:var(--accent-color); margin-bottom:5px;">Studyspot</h3>
+      <small style="color:#ccc;">v0.2 Beta</small>
+  </div>
+  <a href="#">Tools</a>
+  <a href="#">Links</a>
+  <a href="/games.html">Games</a>
+  <a href="#">Guides</a>
+  <a href="#" onclick="location.reload()">Reboot System</a>
+</div>
+
+<div class="page-container">
+  <div class="main-content">
+   
+   <!-- Restored Menu Button -->
+   <div style="width:100%; display:flex;">
+       <button class="openbtn" onclick="openNav()">☰ Menu</button>
+   </div>
+
+    <div style="margin-top: 10vh;">
+        <div class="gradient-text"><h1>Studyspot Hub</h1></div>
+        <h2> (beta) </h2>
+        <div class="changing_text" style="margin-top:20px; font-size: 1.2rem; opacity: 0.8;"><p id="changing_text">Initializing Environment...</p></div>
+        <p id="currentTime" style="margin-top:10px; font-family: monospace; opacity: 0.6;"></p>
+    </div>
+
+    <!-- --- APP LAUNCHER SCREEN --- -->
+    <div id="app-launcher" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(42,0,0,0.95); backdrop-filter:blur(15px); z-index:9000; flex-direction:column; align-items:center; justify-content:center;">
+        <h1 class="gradient-text" style="font-size:3rem; margin-bottom:50px;">Applications</h1>
+        <div id="app-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(100px, 1fr)); gap:30px; max-width:700px; width:90%; justify-items: center;">
+            
+            <div class="app-icon" onclick="launchApp('Music Player')">
+                <div class="app-icon-visual">🎵</div>
+                <p>Music</p>
+            </div>
+
+            <div class="app-icon" onclick="launchApp('Notes')">
+                <div class="app-icon-visual">📝</div>
+                <p>Notes</p>
+            </div>
+
+            <div class="app-icon" onclick="launchApp('Focus Hub')">
+                <div class="app-icon-visual">⚙️</div>
+                <p>Settings</p>
+            </div>
+            
+            <div class="app-icon" onclick="launchApp('Gateway')">
+                <div class="app-icon-visual">🔮</div>
+                <p>Gateway</p>
+            </div>
+            
+            <div class="app-icon" onclick="launchApp('Files')">
+                <div class="app-icon-visual">📂</div>
+                <p>Files</p>
+            </div>
+
+        </div>
+        <button class="openbtn" style="margin-top:50px; width: 200px; text-align:center; align-self: center;" onclick="toggleLauncher()">Close Launcher</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Main FAB -->
+<button class="fab-add" onclick="toggleLauncher()">+</button>
+<!-- LIQUID GLASS FAB -->
+
+
+<!-- RMB context menu -->
+<div id="custom-context-menu" class="smart-context-menu">
+    <div class="menu-item" onclick="toggleLauncher()">Open Applications</div>
+    <div class="menu-item" onclick="spawnModal('System Info', '<h3 class=\'gradient-text\'>Crimson OS 2025</h3><p>Build: Stable 2.0</p><p>Memory: Optimal</p>')">System Info</div>
+    <div style="height:1px; background:rgba(175,0,0,0.475); margin:5px 0;"></div>
+    <div class="menu-item" onclick="location.reload()">Force Refresh</div>
+</div>
+
+<!-- --- CRIMSON OS 2025 LOGIC --- -->
+<script>
+// 0. SYSTEM STATE & NOTIFICATION ENGINE
+window.systemSettings = {
+    doNotDisturb: false
+};
+
+window.notify = function(title, message, duration = 4000) {
+    if (window.systemSettings.doNotDisturb) return;
+
+    const container = document.getElementById('notification-area');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = 'notification-toast';
+    toast.innerHTML = `
+        <div class="notif-title">${title}</div>
+        <div class="notif-msg">${message}</div>
+    `;
+
+    toast.onclick = () => { dismiss(toast); };
+    container.appendChild(toast);
+    setTimeout(() => { dismiss(toast); }, duration);
+
+    function dismiss(element) {
+        if(element.classList.contains('hiding')) return;
+        element.classList.add('hiding');
+        setTimeout(() => { if(element.parentNode) element.remove(); }, 300);
+    }
+};
+
+// 0. FILE SYSTEM INIT
+if (!window.crimsonFileSystem) {
+    window.crimsonFileSystem = {
+        name: 'Root',
+        type: 'folder',
+        children: [
+            { name: 'Music', type: 'folder', children: [] },
+            { name: 'Documents', type: 'folder', children: [] },
+            { name: 'Images', type: 'folder', children: [] },
+            { name: 'readme.txt', type: 'file', fileType: 'text/plain', content: 'Welcome to Crimson Files!' }
+        ]
+    };
+}
+
+// 1. FAIL-SAFE LOADER
+(function() {
+    const clear = () => {
+        const loader = document.getElementById('loading-screen');
+        if (loader) {
+            loader.style.opacity = '0';
+            setTimeout(() => loader.style.display = 'none', 500);
+            const textEl = document.getElementById('changing_text');
+            if(textEl) textEl.innerText = "System Ready.";
+        }
+    };
+    setTimeout(clear, 1500); 
+    window.addEventListener('load', clear);
+})();
+
+// 2. GLOBAL UI CONTROLS
+window.openNav = function() {
+    document.getElementById("mySidebar").classList.add("open");
+    const ov = document.getElementById("globalBlurOverlay");
+    ov.style.display = "block";
+    setTimeout(() => ov.classList.add("visible"), 10);
+};
+
+window.closeNav = function() {
+    document.getElementById("mySidebar").classList.remove("open");
+    const ov = document.getElementById("globalBlurOverlay");
+    ov.classList.remove("visible");
+    setTimeout(() => ov.style.display = "none", 500);
+};
+
+window.togglePin = function() {
+    const bar = document.getElementById('myTopBar');
+    const btn = document.getElementById('pinBtn');
+    if (bar.classList.contains('pinned')) {
+        bar.classList.remove('pinned');
+        btn.classList.remove('active');
+    } else {
+        bar.classList.add('pinned');
+        btn.classList.add('active');
+    }
+};
+
+window.toggleLauncher = function() {
+    const l = document.getElementById('app-launcher');
+    const isHidden = (l.style.display === 'none' || l.style.display === '');
+    l.style.display = isHidden ? 'flex' : 'none';
+    if(isHidden) {
+        l.style.opacity = 0;
+        setTimeout(() => l.style.opacity = 1, 10);
+    }
+};
+
+// --- GLOBAL TOP MENU UPDATER ---
+window.updateTopBar = function(appName, menuData) {
+    const nameEl = document.getElementById('topBarAppName');
+    const menuContainer = document.getElementById('topBarMenuContainer');
+    
+    // Set active App Name (or default to Crimson OS)
+    nameEl.innerText = appName || 'Crimson OS';
+    menuContainer.innerHTML = ''; // Clear previous menu
+
+    if (!menuData) return; // If no menu, leave empty
+
+    Object.keys(menuData).forEach(key => {
+        const item = document.createElement('div');
+        item.className = 'top-menu-item';
+        item.innerText = key;
+        
+        // Dropdown
+        const dropdown = document.createElement('div');
+        dropdown.className = 'top-menu-dropdown';
+        
+        menuData[key].forEach(opt => {
+            const optEl = document.createElement('div');
+            optEl.className = 'top-menu-option';
+            optEl.innerHTML = opt.label;
+            optEl.onclick = (e) => {
+                e.stopPropagation();
+                dropdown.classList.remove('visible');
+                // Remove menu-open class from bar on action
+                document.getElementById('myTopBar').classList.remove('menu-open');
+                opt.action();
+            };
+            dropdown.appendChild(optEl);
+        });
+        
+        item.appendChild(dropdown);
+        
+        // Toggle logic
+        item.onclick = (e) => {
+            e.stopPropagation();
+            const bar = document.getElementById('myTopBar');
+            
+            // Close others
+            document.querySelectorAll('.top-menu-dropdown').forEach(d => {
+                if(d !== dropdown) d.classList.remove('visible');
+            });
+            
+            // Toggle current
+            dropdown.classList.toggle('visible');
+            
+            // Manage top bar state
+            if (dropdown.classList.contains('visible')) {
+                bar.classList.add('menu-open');
+            } else {
+                bar.classList.remove('menu-open');
+            }
+        };
+        
+        menuContainer.appendChild(item);
+    });
+};
+
+// Global click to close top menus
+document.addEventListener('click', () => {
+    document.querySelectorAll('.top-menu-dropdown').forEach(d => d.classList.remove('visible'));
+    // Ensure top bar can hide again
+    const bar = document.getElementById('myTopBar');
+    if (bar) bar.classList.remove('menu-open');
+});
+
+// --- APP LAUNCHER ---
+window.launchApp = function(name) {
+    window.toggleLauncher();
+    
+    switch(name) {
+        case 'Music Player':
+            spawnMusicPlayer();
+            break;
+        case 'Notes':
+            // Notes app logic with Top Bar menu
+            const notesContainer = document.createElement('div');
+            notesContainer.style.cssText = "display:flex; flex-direction:column; height:100%;";
+            
+            const noteTextarea = document.createElement('textarea');
+            noteTextarea.placeholder = "Type your notes here...";
+            noteTextarea.style.cssText = "flex-grow:1; width:100%; background:rgba(0,0,0,0.3); color:white; border:none; padding:15px; font-family:sans-serif; resize:none; box-sizing:border-box; outline:none;";
+            
+            // Logic functions
+            const saveNote = () => {
+                const content = noteTextarea.value;
+                if (!content) return window.notify("Error", "Cannot save empty note");
+                let filename = prompt("Enter filename:");
+                if (!filename) return;
+                if (!filename.endsWith(".cmrtxt")) filename += ".cmrtxt";
+                
+                const root = window.crimsonFileSystem;
+                let targetFolder = root.children.find(c => c.name === "Documents");
+                if (!targetFolder) targetFolder = root;
+                
+                const existingIndex = targetFolder.children.findIndex(c => c.name === filename);
+                if (existingIndex !== -1) {
+                    targetFolder.children[existingIndex].content = content;
+                } else {
+                    targetFolder.children.push({ name: filename, type: 'file', fileType: 'text/plain', content: content });
+                }
+                window.notify("Success", "Note Saved");
+                if(window.activeFileRenderer) window.activeFileRenderer();
+            };
+            
+            const importNote = () => {
+                window.spawnFilesApp(); 
+                window.notify("Info", "Find your file in Files app and click it to edit.");
+            };
+
+            const menuData = {
+                "File": [
+                    { label: "💾 Save", action: saveNote },
+                    { label: "📂 Import", action: importNote }
+                ]
+            };
+            
+            // Restore Save Button at bottom as requested in turn before last
+            const saveBtn = document.createElement('button');
+            saveBtn.className = "openbtn";
+            saveBtn.innerText = "Save Note";
+            saveBtn.style.cssText = "margin-top:10px; width:100%; font-size:14px; padding:5px;";
+            saveBtn.onclick = saveNote;
+
+            notesContainer.appendChild(noteTextarea);
+            notesContainer.appendChild(saveBtn);
+            
+            spawnModal('Notes', notesContainer, menuData);
+            break;
+            
+        case 'Focus Hub':
+             const dndState = window.systemSettings.doNotDisturb ? 'checked' : '';
+            const settingsContainer = document.createElement('div');
+            settingsContainer.style.display = 'flex';
+            settingsContainer.style.flexDirection = 'column';
+            settingsContainer.style.height = '100%';
+
+            const menuHelp = {
+                "Help": [
+                    { label: "ℹ️ About", action: () => window.notify("System", "Crimson OS v0.2 Beta") }
+                ]
+            };
+            
+            const settingsContent = document.createElement('div');
+            settingsContent.style.flexGrow = '1';
+            settingsContent.style.overflowY = 'auto';
+            settingsContent.innerHTML = `
+                <div style="padding:10px;">
+                    <h3 class="gradient-text" style="margin-top:0;">System Settings</h3>
+                    
+                    <div style="background:rgba(0,0,0,0.2); border-radius:10px; padding:15px; margin-bottom:15px;">
+                        <h4 style="margin:0 0 10px 0; color:#ddd;">Notifications</h4>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:12px; color:#ccc;">Do Not Disturb</span>
+                            <label class="switch">
+                                <input type="checkbox" id="dnd-toggle" ${dndState} onchange="window.systemSettings.doNotDisturb = this.checked; if(this.checked) window.notify('System', 'Do Not Disturb Enabled');">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div style="background:rgba(0,0,0,0.2); border-radius:10px; padding:15px; margin-bottom:15px;">
+                        <h4 style="margin:0 0 10px 0; color:#ddd;">Personalization</h4>
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(80px, 1fr)); gap:10px;">
+                            <div onclick="setTheme('crimson')" style="cursor:pointer; text-align:center;">
+                                <div style="height:40px; background:linear-gradient(45deg, #690000, #400909); border:2px solid #AF0000; border-radius:8px; margin-bottom:5px;"></div>
+                                <span style="font-size:10px;">Crimson</span>
+                            </div>
+                            <div onclick="setTheme('ocean')" style="cursor:pointer; text-align:center;">
+                                <div style="height:40px; background:linear-gradient(45deg, #003366, #001529); border:2px solid #0066cc; border-radius:8px; margin-bottom:5px;"></div>
+                                <span style="font-size:10px;">Ocean</span>
+                            </div>
+                            <div onclick="setTheme('forest')" style="cursor:pointer; text-align:center;">
+                                <div style="height:40px; background:linear-gradient(45deg, #1a4d1a, #0a290a); border:2px solid #2eb82e; border-radius:8px; margin-bottom:5px;"></div>
+                                <span style="font-size:10px;">Forest</span>
+                            </div>
+                            <div onclick="setTheme('fire')" style="cursor:pointer; text-align:center;">
+                                <div style="height:40px; background:linear-gradient(45deg, #5c3802, #3d1a00); border:2px solid #af3d00; border-radius:8px; margin-bottom:5px;"></div>
+                                <span style="font-size:10px;">Fire</span>
+                            </div>
+                            <div onclick="setTheme('slushie')" style="cursor:pointer; text-align:center;">
+                                <div style="height:40px; background:linear-gradient(45deg, #001a33, #2b0033); border:2px solid #0055ff; border-radius:8px; margin-bottom:5px;"></div>
+                                <span style="font-size:10px;">Slushie</span>
+                            </div>
+                            <div onclick="setTheme('electro')" style="cursor:pointer; text-align:center;">
+                                <div style="height:40px; background:linear-gradient(45deg, #1a1a00, #333300); border:2px solid #854d0e; border-radius:8px; margin-bottom:5px;"></div>
+                                <span style="font-size:10px;">Electro</span>
+                            </div>
+                            <div onclick="setTheme('nebula')" style="cursor:pointer; text-align:center;">
+                                <div style="height:40px; background:linear-gradient(45deg, #1a0033, #2e004d); border:2px solid #4c1d95; border-radius:8px; margin-bottom:5px;"></div>
+                                <span style="font-size:10px;">Nebula</span>
+                            </div>
+                            <div onclick="setTheme('rgb')" style="cursor:pointer; text-align:center;">
+                                <div style="height:40px; animation: rgb-pulse 3s linear infinite; border:2px solid #fff; border-radius:8px; margin-bottom:5px;"></div>
+                                <span style="font-size:10px;">RGB</span>
+                            </div>
+                            <div onclick="setTheme('rainbow')" style="cursor:pointer; text-align:center;">
+                                <div style="height:40px; animation: rainbow-pulse 5s linear infinite; border:2px solid #fff; border-radius:8px; margin-bottom:5px;"></div>
+                                <span style="font-size:10px;">Rainbow</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            settingsContainer.appendChild(settingsContent);
+            spawnModal('Focus Hub', settingsContainer, menuHelp);
+            break;
+        case 'Gateway':
+            if (!window.gatewayConfig) window.gatewayConfig = { url: '', type: 'Ultraviolet' };
+
+            const renderGatewayUI = () => {
+                return `
+                <div id="gateway-main-view" style="display:flex; flex-direction:column; height:100%; color:white;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.1);">
+                        <div style="font-weight:bold; font-size:12px; color:#aaa;">GATEWAY</div>
+                        <div style="display:flex; gap:10px;">
+                            <span id="status-indicator" style="font-size:10px; color:${window.gatewayConfig.url ? '#0f0' : '#f00'}; align-self:center;">${window.gatewayConfig.url ? 'CONNECTED' : 'NO BACKEND'}</span>
+                            <button class="modal-ctrl-btn" onclick="toggleGatewaySettings()">⚙️</button>
+                        </div>
+                    </div>
+
+                    <div style="flex-grow:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px;">
+                        <div class="gradient-text" style="font-size:2rem; letter-spacing:2px;">GATEWAY</div>
+                        
+                        <input type="text" id="proxy-url-input" placeholder="Search or type URL..." 
+                            style="width:80%; padding:12px; border-radius:25px; border:2px solid var(--border-color); background:rgba(0,0,0,0.3); color:white; text-align:center; outline:none; transition:0.3s;">
+                        
+                        <button class="openbtn" style="width:auto; padding:8px 30px; margin:0;" onclick="startProxy()">Launch</button>
+                        
+                        <p style="font-size:10px; color:#666; max-width:200px; text-align:center;">
+                            ${window.gatewayConfig.url ? 'Routing via: ' + new URL(window.gatewayConfig.url).hostname : '⚠️ Please configure backend in settings'}
+                        </p>
+                    </div>
+                    
+                    <div id="proxy-log" style="height:60px; background:black; border-top:1px solid #333; font-family:monospace; font-size:10px; color:var(--accent-color); padding:5px; overflow-y:auto; display:none;">
+                    </div>
+                </div>
+
+                <div id="gateway-settings-view" style="display:none; flex-direction:column; height:100%; color:white; padding:10px;">
+                    <h3 style="margin-top:0;">Configuration</h3>
+                    <label style="font-size:12px; color:#aaa;">Backend URL (e.g. https://my-uv.com/service/)</label>
+                    <input type="text" id="backend-config-input" value="${window.gatewayConfig.url}" placeholder="https://..." style="width:100%; background:rgba(0,0,0,0.3); border:1px solid var(--border-color); color:white; padding:8px; border-radius:4px; margin-top:5px; box-sizing:border-box;">
+                    
+                    <label style="font-size:12px; color:#aaa; margin-top:15px; display:block;">Protocol Handling</label>
+                    <select id="backend-type-input" style="width:100%; background:rgba(0,0,0,0.3); border:1px solid var(--border-color); color:white; padding:8px; border-radius:4px; margin-top:5px;">
+                        <option value="Ultraviolet" ${window.gatewayConfig.type === 'Ultraviolet' ? 'selected' : ''}>Ultraviolet (Standard)</option>
+                        <option value="Plain" ${window.gatewayConfig.type === 'Plain' ? 'selected' : ''}>Plain Redirect</option>
+                    </select>
+
+                    <div style="margin-top:auto; display:flex; justify-content:flex-end; gap:10px;">
+                        <button class="openbtn" style="font-size:12px; padding:5px 15px; background:#333; border-color:#555;" onclick="toggleGatewaySettings()">Cancel</button>
+                        <button class="openbtn" style="font-size:12px; padding:5px 15px;" onclick="saveGatewayConfig()">Save</button>
+                    </div>
+                </div>
+                `;
+            };
+            
+            spawnModal('Network Gateway', renderGatewayUI());
+
+            window.toggleGatewaySettings = function() {
+                const main = document.getElementById('gateway-main-view');
+                const settings = document.getElementById('gateway-settings-view');
+                if (main.style.display === 'none') {
+                    main.style.display = 'flex';
+                    settings.style.display = 'none';
+                } else {
+                    main.style.display = 'none';
+                    settings.style.display = 'flex';
+                }
+            };
+
+            window.saveGatewayConfig = function() {
+                const url = document.getElementById('backend-config-input').value;
+                const type = document.getElementById('backend-type-input').value;
+                if (url) {
+                    window.gatewayConfig.url = url;
+                    window.gatewayConfig.type = type;
+                    const modalBody = document.getElementById('gateway-main-view').parentElement;
+                    modalBody.innerHTML = renderGatewayUI();
+                }
+            };
+
+            window.startProxy = function() {
+                const urlInput = document.getElementById('proxy-url-input').value;
+                const log = document.getElementById('proxy-log');
+                
+                if(!window.gatewayConfig.url) {
+                    window.notify("Gateway Error", "Please configure a Backend URL in settings!");
+                    toggleGatewaySettings();
+                    return;
+                }
+                
+                if(!urlInput) return;
+                log.style.display = 'block';
+                log.innerHTML = '> Handshake initiated...<br>';
+                
+                setTimeout(() => log.innerHTML += `> Connecting to ${window.gatewayConfig.type} Node...<br>`, 400);
+                setTimeout(() => log.innerHTML += '> Packaging request...<br>', 800);
+                
+                setTimeout(() => {
+                    let targetUrl = urlInput;
+                    if (!targetUrl.startsWith('http')) targetUrl = 'https://' + targetUrl;
+
+                    let finalLink = '';
+                    if (window.gatewayConfig.type === 'Ultraviolet') {
+                        let baseUrl = window.gatewayConfig.url;
+                        if (!baseUrl.endsWith('/')) baseUrl += '/';
+                        finalLink = baseUrl + encodeURIComponent(targetUrl);
+                    } else {
+                        finalLink = window.gatewayConfig.url + targetUrl;
+                    }
+
+                    log.innerHTML += `> Redirecting to: ${finalLink}<br>`;
+                    window.open(finalLink, '_blank');
+                    log.innerHTML += '> Session Active.';
+                    window.notify("Gateway", "Session Launched in New Tab");
+                }, 1500);
+            };
+            break;
+        case 'Files':
+            spawnFilesApp();
+            break;
+        default:
+            spawnModal(name, '<p>Application loaded.</p>');
+    }
+};
+
+// --- SYSTEM FUNCTIONS (Globally Defined) ---
+let highestZ = 5000;
+
+window.setTheme = function(themeName) {
+    const root = document.documentElement;
+    if (window.themeInterval) { clearInterval(window.themeInterval); window.themeInterval = null; }
+
+    if (themeName === 'crimson') {
+        root.style.setProperty('--bg-core', '#400909');
+        root.style.setProperty('--bg-grad-1', '#690000');
+        root.style.setProperty('--bg-grad-2', '#450000');
+        root.style.setProperty('--btn-bg', '#590000');
+        root.style.setProperty('--border-color', '#AF0000');
+        root.style.setProperty('--accent-color', '#fc0384');
+        root.style.setProperty('--text-grad-1', '#ff0000');
+        root.style.setProperty('--text-grad-2', '#fc0384');
+        root.style.setProperty('--border-grad-1', '#d94848');
+        root.style.setProperty('--border-grad-2', '#a03232');
+        root.style.setProperty('--glass-bg', 'rgba(40, 0, 0, 0.95)');
+    } else if (themeName === 'ocean') {
+        root.style.setProperty('--bg-core', '#001529');
+        root.style.setProperty('--bg-grad-1', '#003366');
+        root.style.setProperty('--bg-grad-2', '#002244');
+        root.style.setProperty('--btn-bg', '#004080');
+        root.style.setProperty('--border-color', '#0066cc');
+        root.style.setProperty('--accent-color', '#00d4ff');
+        root.style.setProperty('--text-grad-1', '#0088ff');
+        root.style.setProperty('--text-grad-2', '#00d4ff');
+        root.style.setProperty('--border-grad-1', '#3399ff');
+        root.style.setProperty('--border-grad-2', '#0055aa');
+        root.style.setProperty('--glass-bg', 'rgba(0, 21, 41, 0.95)');
+    } else if (themeName === 'forest') {
+        root.style.setProperty('--bg-core', '#0a290a');
+        root.style.setProperty('--bg-grad-1', '#1a4d1a');
+        root.style.setProperty('--bg-grad-2', '#0d330d');
+        root.style.setProperty('--btn-bg', '#145214');
+        root.style.setProperty('--border-color', '#2eb82e');
+        root.style.setProperty('--accent-color', '#66ff66');
+        root.style.setProperty('--text-grad-1', '#33cc33');
+        root.style.setProperty('--text-grad-2', '#85e085');
+        root.style.setProperty('--border-grad-1', '#5cd65c');
+        root.style.setProperty('--border-grad-2', '#1f7a1f');
+        root.style.setProperty('--glass-bg', 'rgba(10, 41, 10, 0.95)');
+    } else if (themeName === 'fire') {
+        root.style.setProperty('--bg-core', '#3d1a00');
+        root.style.setProperty('--bg-grad-1', '#5c3802');
+        root.style.setProperty('--bg-grad-2', '#5c1301');
+        root.style.setProperty('--btn-bg', '#6d2901');
+        root.style.setProperty('--border-color', '#af3d00');
+        root.style.setProperty('--accent-color', '#ff9203');
+        root.style.setProperty('--text-grad-1', '#f0a502');
+        root.style.setProperty('--text-grad-2', '#f06902');
+        root.style.setProperty('--border-grad-1', '#ab6803');
+        root.style.setProperty('--border-grad-2', '#ad3c00');
+        root.style.setProperty('--glass-bg', 'rgba(40, 23, 0, 0.7)');
+    } else if (themeName === 'slushie') {
+        root.style.setProperty('--bg-core', '#0d001a');
+        root.style.setProperty('--bg-grad-1', '#001a33');
+        root.style.setProperty('--bg-grad-2', '#2b0033');
+        root.style.setProperty('--btn-bg', '#e6003e');
+        root.style.setProperty('--border-color', '#0055ff');
+        root.style.setProperty('--accent-color', '#ff0040');
+        root.style.setProperty('--text-grad-1', '#ffffff');
+        root.style.setProperty('--text-grad-2', '#70b8ff');
+        root.style.setProperty('--border-grad-1', '#00f2ff');
+        root.style.setProperty('--border-grad-2', '#ff0055');
+        root.style.setProperty('--glass-bg', 'rgba(15, 5, 30, 0.7)');
+    } else if (themeName === 'electro') {
+        root.style.setProperty('--bg-core', '#0a0a05');
+        root.style.setProperty('--bg-grad-1', '#1a1a00');
+        root.style.setProperty('--bg-grad-2', '#333300');
+        root.style.setProperty('--btn-bg', '#eab308');
+        root.style.setProperty('--border-color', '#854d0e');
+        root.style.setProperty('--accent-color', '#facc15');
+        root.style.setProperty('--text-grad-1', '#ffffff');
+        root.style.setProperty('--text-grad-2', '#fef08a');
+        root.style.setProperty('--border-grad-1', '#fde047');
+        root.style.setProperty('--border-grad-2', '#ca8a04');
+        root.style.setProperty('--glass-bg', 'rgba(20, 20, 0, 0.7)');
+    } else if (themeName === 'nebula') {
+        root.style.setProperty('--bg-core', '#120021');
+        root.style.setProperty('--bg-grad-1', '#1a0033');
+        root.style.setProperty('--bg-grad-2', '#2e004d');
+        root.style.setProperty('--btn-bg', '#8b5cf6');
+        root.style.setProperty('--border-color', '#4c1d95');
+        root.style.setProperty('--accent-color', '#d8b4fe');
+        root.style.setProperty('--text-grad-1', '#ffffff');
+        root.style.setProperty('--text-grad-2', '#c084fc');
+        root.style.setProperty('--border-grad-1', '#a78bfa');
+        root.style.setProperty('--border-grad-2', '#6d28d9');
+        root.style.setProperty('--glass-bg', 'rgba(30, 0, 50, 0.7)');
+    } else if (themeName === 'rainbow') {
+        let hue = 0;
+        window.themeInterval = setInterval(() => {
+            hue = (hue + 1) % 360;
+            root.style.setProperty('--bg-core', `hsl(${hue}, 60%, 5%)`);
+            root.style.setProperty('--bg-grad-1', `hsl(${hue}, 60%, 10%)`);
+            root.style.setProperty('--bg-grad-2', `hsl(${hue}, 60%, 15%)`);
+            root.style.setProperty('--btn-bg', `hsl(${hue}, 50%, 20%)`);
+            root.style.setProperty('--border-color', `hsl(${hue}, 80%, 50%)`);
+            root.style.setProperty('--accent-color', `hsl(${hue}, 100%, 60%)`);
+            root.style.setProperty('--text-grad-1', '#ffffff');
+            root.style.setProperty('--text-grad-2', `hsl(${(hue + 180) % 360}, 100%, 70%)`);
+            root.style.setProperty('--border-grad-1', `hsl(${hue}, 80%, 60%)`);
+            root.style.setProperty('--border-grad-2', `hsl(${(hue + 40) % 360}, 80%, 60%)`);
+            root.style.setProperty('--glass-bg', `hsla(${hue}, 50%, 10%, 0.8)`);
+        }, 50);
+    } else if (themeName === 'rgb') {
+        let step = 0;
+        window.themeInterval = setInterval(() => {
+            step = (step + 2) % 765;
+            let r, g, b;
+            if (step < 255) { r = 255 - step; g = step; b = 0; }
+            else if (step < 510) { r = 0; g = 510 - step; b = step - 255; }
+            else { r = step - 510; g = 0; b = 765 - step; }
+            root.style.setProperty('--bg-core', `rgb(${Math.floor(r*0.1)}, ${Math.floor(g*0.1)}, ${Math.floor(b*0.1)})`);
+            root.style.setProperty('--bg-grad-1', `rgb(${Math.floor(r*0.2)}, ${Math.floor(g*0.2)}, ${Math.floor(b*0.2)})`);
+            root.style.setProperty('--bg-grad-2', `rgb(${Math.floor(r*0.15)}, ${Math.floor(g*0.15)}, ${Math.floor(b*0.15)})`);
+            root.style.setProperty('--btn-bg', `rgb(${Math.floor(r*0.3)}, ${Math.floor(g*0.3)}, ${Math.floor(b*0.3)})`);
+            root.style.setProperty('--border-color', `rgb(${r}, ${g}, ${b})`);
+            root.style.setProperty('--accent-color', `rgb(${r}, ${g}, ${b})`);
+            root.style.setProperty('--text-grad-1', '#ffffff');
+            root.style.setProperty('--text-grad-2', `rgb(${r}, ${g}, ${b})`);
+            root.style.setProperty('--border-grad-1', `rgb(${r}, ${g}, ${b})`);
+            root.style.setProperty('--border-grad-2', `rgb(${Math.floor(r*0.5)}, ${Math.floor(g*0.5)}, ${Math.floor(b*0.5)})`);
+            root.style.setProperty('--glass-bg', `rgba(${Math.floor(r*0.1)}, ${Math.floor(g*0.1)}, ${Math.floor(b*0.1)}, 0.8)`);
+        }, 50);
+    }
+};
+
+window.renderTabs = function(modal) {
+    const tabBar = modal.querySelector('.tab-bar');
+    const body = modal.querySelector('.modal-body');
+    const headerTitle = modal.querySelector('.modal-title');
+    tabBar.innerHTML = '';
+    if (modal._tabs.length === 0) { modal.remove(); return; }
+    modal._tabs.forEach((tab, index) => {
+        const tabEl = document.createElement('div');
+        tabEl.className = 'tab-item ' + (modal._activeTabIndex === index ? 'active' : '');
+        tabEl.innerHTML = `<span>${tab.title}</span> <span style="font-size:10px; opacity:0.5;">✕</span>`;
+        tabEl.onclick = (e) => { e.stopPropagation(); modal._activeTabIndex = index; renderTabs(modal); };
+        tabEl.lastElementChild.onclick = (e) => { e.stopPropagation(); modal._tabs.splice(index, 1); if (modal._activeTabIndex >= modal._tabs.length) modal._activeTabIndex = Math.max(0, modal._tabs.length - 1); renderTabs(modal); };
+        tabBar.appendChild(tabEl);
+    });
+    const activeTab = modal._tabs[modal._activeTabIndex || 0];
+    if (activeTab) {
+        body.innerHTML = '';
+        if (typeof activeTab.content === 'string') body.innerHTML = activeTab.content;
+        else if (activeTab.content instanceof HTMLElement) body.appendChild(activeTab.content);
+        modal.querySelector('.modal-title').innerText = activeTab.title;
+    }
+};
+
+window.spawnFilesApp = function() {
+    const container = document.createElement('div');
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.height = '100%';
+    container.style.color = 'white';
+
+    let currentFolder = window.crimsonFileSystem;
+    let pathStack = [window.crimsonFileSystem];
+
+    const render = () => {
+        container.innerHTML = '';
+        
+        const toolbar = document.createElement('div');
+        toolbar.style.padding = '10px';
+        toolbar.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+        toolbar.style.display = 'flex';
+        toolbar.style.gap = '10px';
+        toolbar.style.alignItems = 'center';
+
+        const backBtn = document.createElement('button');
+        backBtn.className = 'modal-ctrl-btn';
+        backBtn.innerText = '⬅';
+        backBtn.onclick = () => {
+            if(pathStack.length > 1) {
+                pathStack.pop();
+                currentFolder = pathStack[pathStack.length - 1];
+                render();
+            }
+        };
+        if(pathStack.length <= 1) backBtn.disabled = true;
+        backBtn.style.opacity = pathStack.length <= 1 ? 0.5 : 1;
+        
+        const pathDisplay = document.createElement('div');
+        pathDisplay.style.flexGrow = '1';
+        pathDisplay.style.fontSize = '12px';
+        pathDisplay.style.color = '#aaa';
+        pathDisplay.innerText = pathStack.map(f => f.name).join(' / ');
+
+        const newFolderBtn = document.createElement('button');
+        newFolderBtn.className = 'openbtn';
+        newFolderBtn.style.margin = '0';
+        newFolderBtn.style.padding = '4px 10px';
+        newFolderBtn.style.fontSize = '12px';
+        newFolderBtn.innerText = '+ Folder';
+        newFolderBtn.onclick = () => {
+            const name = prompt("Folder Name:");
+            if(name) {
+                currentFolder.children.push({ name, type: 'folder', children: [] });
+                render();
+            }
+        };
+
+        const uploadInput = document.createElement('input');
+        uploadInput.type = 'file';
+        uploadInput.style.display = 'none';
+        uploadInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if(file) {
+                const url = URL.createObjectURL(file);
+                currentFolder.children.push({
+                    name: file.name,
+                    type: 'file',
+                    fileType: file.type,
+                    content: url
+                });
+                render();
+            }
+        };
+
+        const uploadBtn = document.createElement('button');
+        uploadBtn.className = 'openbtn';
+        uploadBtn.style.margin = '0';
+        uploadBtn.style.padding = '4px 10px';
+        uploadBtn.style.fontSize = '12px';
+        uploadBtn.innerText = 'Upload';
+        uploadBtn.onclick = () => uploadInput.click();
+
+        toolbar.append(backBtn, pathDisplay, newFolderBtn, uploadBtn, uploadInput);
+        container.appendChild(toolbar);
+
+        const grid = document.createElement('div');
+        grid.style.padding = '20px';
+        grid.style.display = 'grid';
+        grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(80px, 1fr))';
+        grid.style.gap = '15px';
+        grid.style.overflowY = 'auto';
+        grid.style.flexGrow = '1';
+
+        if(currentFolder.children.length === 0) {
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #666; font-size: 12px; margin-top: 20px;">Empty Folder</div>';
+        } else {
+            currentFolder.children.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'file-grid-item';
+                
+                let iconChar = '📄';
+                if (item.type === 'folder') iconChar = '📁';
+                else if (item.name.endsWith('.cmrtxt')) iconChar = '📝'; 
+                else if (item.fileType?.startsWith('image')) iconChar = '🖼️';
+                else if (item.fileType?.startsWith('audio')) iconChar = '🎵';
+                
+                const icon = document.createElement('div');
+                icon.style.fontSize = '30px';
+                icon.innerText = iconChar;
+                
+                const label = document.createElement('div');
+                label.style.fontSize = '10px';
+                label.style.marginTop = '5px';
+                label.style.wordBreak = 'break-word';
+                label.innerText = item.name;
+
+                itemEl.append(icon, label);
+                
+                itemEl.onclick = () => {
+                    if(item.type === 'folder') {
+                        currentFolder = item;
+                        pathStack.push(item);
+                        render();
+                    } else {
+                        if(item.name.endsWith('.cmrtxt')) {
+                            const editId = Date.now();
+                            const editContainer = document.createElement('div');
+                            editContainer.style.cssText = "display:flex; flex-direction:column; height:100%;";
+                            const editArea = document.createElement('textarea');
+                            editArea.value = item.content || '';
+                            editArea.style.cssText = "flex-grow:1; width:100%; background:rgba(0,0,0,0.3); color:white; border:1px solid var(--border-color); border-radius:10px; padding:10px; font-family:sans-serif; resize:none; box-sizing:border-box;";
+                            const updateBtn = document.createElement('button');
+                            updateBtn.className = "openbtn";
+                            updateBtn.innerText = "Update File";
+                            updateBtn.style.cssText = "margin-top:10px; width:100%; font-size:14px; padding:5px;";
+                            updateBtn.onclick = () => {
+                                item.content = editArea.value;
+                                window.notify("Files", "File updated successfully!");
+                            };
+                            editContainer.appendChild(editArea);
+                            editContainer.appendChild(updateBtn);
+                            spawnModal(item.name, editContainer);
+                        } else if(item.fileType?.startsWith('image')) {
+                            spawnModal(item.name, `<div style="display:flex; justify-content:center; align-items:center; height:100%;"><img src="${item.content}" style="max-width:100%; max-height:100%; border-radius:8px;"></div>`);
+                        } else if (item.fileType?.startsWith('audio')) {
+                            const audio = new Audio(item.content);
+                            audio.play();
+                            window.notify("Media Player", "Playing audio snippet...");
+                        } else {
+                            window.notify("Files", `Previewing: ${item.name}`);
+                        }
+                    }
+                };
+                
+                grid.appendChild(itemEl);
+            });
+        }
+
+        container.appendChild(grid);
+    };
+
+    window.activeFileRenderer = render;
+    render();
+    spawnModal('Files', container);
+};
+
+window.spawnMusicPlayer = function() {
+    const playlist = [
+        { title: "Enthusiast", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Tours/Enthusiast/Tours_-_01_-_Enthusiast.mp3" },
+        { title: "Sentinel", url: "https://files.freemusicarchive.org/storage-freemusicarchive-org/music/ccCommunity/Kai_Engel/Satin/Kai_Engel_-_04_-_Sentinel.mp3" },
+        { title: "Classic Demo", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" }
+    ];
+    let currentTrack = 0;
+    let isPlaying = false;
+    const id = Date.now();
+    
+    const playerContainer = document.createElement('div');
+    playerContainer.style.cssText = "display:flex; flex-direction:column; height:100%;";
+
+    let audio = new Audio(playlist[0].url);
+    audio.onerror = () => { window.notify("Error", "Stream Failed"); };
+    audio.onended = () => { nextTrack(); };
+    audio.ontimeupdate = () => {
+        const pct = (audio.currentTime / audio.duration) * 100;
+        if(document.getElementById(`progress-bar-${id}`)) 
+            document.getElementById(`progress-bar-${id}`).style.width = pct + "%";
+    };
+
+    const updateTrack = () => {
+        audio.src = playlist[currentTrack].url;
+        if(isPlaying) audio.play();
+        const titleEl = document.getElementById(`track-title-${id}`);
+        if(titleEl) titleEl.innerText = playlist[currentTrack].title;
+    };
+
+    const togglePlay = () => {
+        if(audio.paused) {
+            audio.play();
+            isPlaying = true;
+        } else {
+            audio.pause();
+            isPlaying = false;
+        }
+    };
+
+    const nextTrack = () => {
+        currentTrack = (currentTrack + 1) % playlist.length;
+        updateTrack();
+    };
+
+    const prevTrack = () => {
+        currentTrack = (currentTrack - 1 + playlist.length) % playlist.length;
+        updateTrack();
+    };
+
+    const menuData = {
+        "Playback": [
+            { label: "▶ Play/Pause", action: togglePlay },
+            { label: "⏭ Next", action: nextTrack },
+            { label: "⏮ Previous", action: prevTrack }
+        ]
+    };
+
+    const ui = document.createElement('div');
+    ui.innerHTML = `
+        <div style="text-align:center; display:flex; flex-direction:column; height:100%; padding: 10px;">
+            <div style="flex-grow:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                <div style="width:120px; height:120px; background:rgba(0,0,0,0.3); border-radius:15px; display:flex; align-items:center; justify-content:center; border:2px solid var(--border-color); box-shadow:0 10px 20px rgba(0,0,0,0.3);">
+                    <span style="font-size:50px;">🎵</span>
+                </div>
+                <h3 id="track-title-${id}" style="margin:20px 0 5px 0; color:white; font-size:16px;">${playlist[0].title}</h3>
+                <p style="font-size:12px; color:#aaa; margin:0;">Studyspot Radio</p>
+            </div>
+            <div style="padding:20px 0;">
+                 <div style="width:100%; height:4px; background:rgba(0,0,0,0.3); margin-bottom:20px; border-radius:2px; cursor:pointer;" id="progress-container-${id}">
+                    <div id="progress-bar-${id}" style="width:0%; height:100%; background:var(--accent-color); border-radius:2px; transition:width 0.1s linear;"></div>
+                </div>
+                
+                <div style="display:flex; gap:20px; justify-content:center; align-items:center;">
+                    <button class="modal-ctrl-btn" style="width:40px; height:40px; border-radius:50%; font-size:18px;" id="prev-btn-${id}">⏮</button>
+                    <button class="modal-ctrl-btn" style="width:50px; height:50px; border-radius:50%; font-size:24px; background:var(--accent-color); border-color:white;" id="play-btn-${id}">▶</button>
+                    <button class="modal-ctrl-btn" style="width:40px; height:40px; border-radius:50%; font-size:18px;" id="next-btn-${id}">⏭</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    setTimeout(() => {
+        const pCont = document.getElementById(`progress-container-${id}`);
+        const playBtn = document.getElementById(`play-btn-${id}`);
+        const nextBtn = document.getElementById(`next-btn-${id}`);
+        const prevBtn = document.getElementById(`prev-btn-${id}`);
+
+        if(pCont) {
+            pCont.onclick = (e) => {
+                const rect = pCont.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width;
+                audio.currentTime = pos * audio.duration;
+            };
+        }
+        if(playBtn) playBtn.onclick = togglePlay;
+        if(nextBtn) nextBtn.onclick = nextTrack;
+        if(prevBtn) prevBtn.onclick = prevTrack;
+    }, 100);
+
+    playerContainer.appendChild(ui);
+    spawnModal('Music Player', playerContainer, menuData);
+};
+
+window.spawnModal = function(title, content, menuData = null) {
+    const dialog = document.createElement('div'); 
+    dialog.className = 'smart-modal';
+    dialog.setAttribute('open', '');
+    dialog._tabs = [{ title, content }];
+    dialog._activeTabIndex = 0;
+    dialog._menuData = menuData;
+
+    dialog.innerHTML = `
+        <div class="tab-bar"></div>
+        <div class="modal-header">
+            <span class="gradient-text modal-title" style="font-size:14px; font-weight:700;">${title}</span>
+            <div style="display:flex;">
+                <button class="modal-ctrl-btn min-btn">_</button>
+                <button class="modal-ctrl-btn close-main-btn">✕</button>
+            </div>
+        </div>
+        <div class="modal-body"></div>`;
+    document.body.appendChild(dialog);
+    renderTabs(dialog);
+    
+    const rX = 50 + Math.random() * 200;
+    const rY = 50 + Math.random() * 100;
+    dialog.style.top = rY + 'px'; dialog.style.left = rX + 'px';
+    dialog.style.zIndex = ++highestZ;
+
+    const setFocus = () => {
+        dialog.style.zIndex = ++highestZ;
+        window.updateTopBar(title, dialog._menuData);
+    };
+
+    dialog.addEventListener('mousedown', setFocus);
+    setFocus();
+
+    dialog.querySelector('.close-main-btn').onclick = () => { 
+        dialog.style.opacity = 0; 
+        dialog.style.transform = "scale(0.9)"; 
+        setTimeout(() => {
+            dialog.remove();
+            window.updateTopBar(null, null); 
+        }, 200); 
+    };
+    dialog.querySelector('.min-btn').onclick = () => { dialog.style.height = '35px'; dialog._isMin = true; };
+    dialog.querySelector('.modal-header').ondblclick = () => { dialog.style.height = '350px'; dialog._isMin = false; }
+
+    const header = dialog.querySelector('.modal-header');
+    let isDragging = false;
+    let grabOffsetX = 0;
+    let grabOffsetY = 0;
+
+    header.onpointerdown = (e) => {
+        if (e.target.tagName === 'BUTTON') return; 
+        isDragging = true;
+        dialog.style.transition = 'none'; 
+        header.setPointerCapture(e.pointerId);
+        const rect = dialog.getBoundingClientRect();
+        grabOffsetX = e.clientX - rect.left;
+        grabOffsetY = e.clientY - rect.top;
+        setFocus(); 
+        header.style.cursor = 'grabbing';
+        e.preventDefault(); 
+    };
+    header.onpointermove = (e) => {
+        if (!isDragging) return;
+        dialog.style.left = (e.clientX - grabOffsetX) + 'px';
+        dialog.style.top = (e.clientY - grabOffsetY) + 'px';
+    };
+    header.onpointerup = (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        header.releasePointerCapture(e.pointerId);
+        header.style.cursor = 'move';
+        dialog.style.transition = 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1), height 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.5s ease';
+        dialog.style.display = 'none';
+        const target = document.elementFromPoint(e.clientX, e.clientY);
+        dialog.style.display = 'flex';
+        const targetModal = target ? target.closest('.smart-modal') : null;
+        if (targetModal && targetModal !== dialog) {
+            targetModal._tabs.push(...dialog._tabs);
+            renderTabs(targetModal);
+            dialog.remove();
+        }
+    };
+};
+
+const menu = document.getElementById('custom-context-menu');
+document.addEventListener('contextmenu', (e) => { 
+    e.preventDefault(); 
+    menu.style.display = 'block'; 
+    menu.style.left = e.clientX + 'px'; 
+    menu.style.top = e.clientY + 'px'; 
+});
+document.addEventListener('click', (e) => {
+    if (!menu.contains(e.target)) {
+        menu.style.display = 'none';
+    }
+});
+
+setInterval(() => { 
+    const c = document.getElementById('currentTime'); 
+    if(c) c.innerText = new Date().toLocaleTimeString() + " | " + new Date().toLocaleDateString(); 
+}, 1000);
+
+
+</script>
+
+</body>
+</html>
